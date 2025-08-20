@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    bio: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -15,6 +19,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    posts: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'post',
+      },
+    ],
     profilePic: {
       type: String,
       required: true,

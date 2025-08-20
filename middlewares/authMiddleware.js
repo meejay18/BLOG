@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 export const authentication = async (req, res, next) => {
-  const { token } = res.cookies
+  const { token } = req.cookies
   if (!token) {
     return res.status(400).json({
       message: ' Token not found, please login to your account',

@@ -5,10 +5,16 @@ const port = 4500
 import dotenv from 'dotenv'
 dotenv.config()
 import userRoute from './route/userRoute.js'
+import postRoute from './route/postRoute.js'
+import commentRoute from './route/commentRoute.js'
+import cookieParser from 'cookie-parser'
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use(userRoute)
+app.use(postRoute)
+app.use(commentRoute)
 
 mongoose
   .connect(process.env.MONGO_URL)

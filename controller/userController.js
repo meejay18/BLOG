@@ -34,7 +34,7 @@ export const createUser = async (req, res, next) => {
     const resource = await cloudinary.uploader.upload(file.path)
     // console.log(resource)
 
-    const newUser = await userModel({
+    const newUser = new userModel({
       name,
       email,
       password: hashedPassword,
