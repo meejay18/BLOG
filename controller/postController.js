@@ -1,6 +1,7 @@
 import postmodel from '../model/postModel.js'
 import cloudinary from '../utils/cloudinary.js'
 import fs from 'fs/promises'
+import userModel from '../model/userModel.js'
 
 export const createPost = async (req, res, next) => {
   const { id } = req.user
@@ -16,6 +17,15 @@ export const createPost = async (req, res, next) => {
     const newPost = new postmodel({ author: id, ...body })
 
     const savedPost = await newPost.save()
+
+    // await userModel
+    //   .findByIdAndUpdate(id, { $push: { posts: savedPost._id } }, { new: true })
+    //   .populate('posts')
+
+    await userModel
+      .findByIdAndUpdate(id, { $push: { posts: savedPost.id } }, { new: true })
+      .populate('posts')
+      .populate('comments')
 
     await fs.unlink(file['previewPicture'][0].path)
     await fs.unlink(file['detailedPicture'][0].path)

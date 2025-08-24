@@ -32,6 +32,8 @@ export const createUser = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     const resource = await cloudinary.uploader.upload(file.path)
+    console.log(resource)
+
     // console.log(resource)
 
     const newUser = new userModel({
@@ -41,8 +43,8 @@ export const createUser = async (req, res, next) => {
       profilePic: resource.secure_url,
       ...others,
     })
-    await fs.unlink(file.path)
     const savedUser = await newUser.save()
+    await fs.unlink(file.path)
 
     return res.status(201).json({
       message: 'New user created',
@@ -89,6 +91,29 @@ export const loginUser = async (req, res, next) => {
 
     return res.status(200).json({
       message: 'Login Successful',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getOneUser = async (req, res, next) => {
+  const { id } = req.params
+  try {
+    const user = await userModel.findById(id).populate('posts')
+    return res.status(200).json({
+      message: 'User retrieved successfully',
+      data: user,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await userModel.find().populate('posts').populate('comments')
+    return res.status(200).json({
+      message: 'Users retrieved successfully',
+      data: users,
     })
   } catch (error) {
     next(error)

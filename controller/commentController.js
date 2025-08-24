@@ -6,11 +6,19 @@ export const createComment = async (req, res, next) => {
   const { postId } = req.params
   const body = req.body
 
+  if (!postId) {
+    return res.status(404).json({
+      message: 'Post not found',
+    })
+  }
+
   try {
     const newComment = new commentModel({ author: id, postId, ...body })
     const savedComment = await newComment.save()
 
-    await postModel.findByIdAndUpdate(postId, { $push: { comments: savedComment.id } }, { new: true })
+    await postModel
+      .findByIdAndUpdate(postId, { $push: { comments: savedComment.id } }, { new: true })
+      .populate('comments')
 
     return res.status(201).json({
       message: 'Comment created successfully',
