@@ -32,7 +32,7 @@ export const createUser = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, salt)
 
     const resource = await cloudinary.uploader.upload(file.path)
-    console.log(resource)
+    // console.log(resource)
 
     // console.log(resource)
 
@@ -91,6 +91,36 @@ export const loginUser = async (req, res, next) => {
 
     return res.status(200).json({
       message: 'Login Successful',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const updateUser = async (req, res, next) => {
+  const { id, role } = req.user
+  const { userId } = req.params
+  const data = req.body
+  try {
+    const user = await userModel.findById(userId)
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      })
+    }
+
+    const isUser = user.id === id
+    const isAdmin = role === 'admin'
+
+    if (!isUser && !isAdmin) {
+      return res.status(403).json({
+        message: 'You cannot carry out this operation',
+      })
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(userId, { ...data }, { new: true })
+    return res.status(200).json({
+      message: 'User updated successfully',
+      data: updatedUser,
     })
   } catch (error) {
     next(error)

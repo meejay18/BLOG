@@ -18,10 +18,6 @@ export const createPost = async (req, res, next) => {
 
     const savedPost = await newPost.save()
 
-    // await userModel
-    //   .findByIdAndUpdate(id, { $push: { posts: savedPost._id } }, { new: true })
-    //   .populate('posts')
-
     await userModel
       .findByIdAndUpdate(id, { $push: { posts: savedPost.id } }, { new: true })
       .populate('posts')
@@ -37,6 +33,40 @@ export const createPost = async (req, res, next) => {
   } catch (error) {
     await fs.unlink(file['previewPicture'][0].path)
     await fs.unlink(file['detailedPicture'][0].path)
+    next(error)
+  }
+}
+
+export const getOnePost = async (req, res, next) => {
+  const { postId } = req.params
+  try {
+    const post = await postmodel.findById(postId)
+    if (!post) {
+      return res.status(404).json({
+        message: 'Post not found',
+      })
+    }
+    return res.status(200).json({
+      message: 'Post retrieved',
+      data: post,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+export const getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await postmodel.find()
+    if (!posts) {
+      return res.status(404).json({
+        message: 'Posts not found',
+      })
+    }
+    return res.status(200).json({
+      message: 'Post retrieved',
+      data: posts,
+    })
+  } catch (error) {
     next(error)
   }
 }
